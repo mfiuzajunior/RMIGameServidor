@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC	"-//SPRING//DTD BEAN//EN"
+						"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+	<bean id="beanFrame"						class="javax.swing.JFrame"/>
+	<bean id="beanScrollPaneLogDeMensagens"		class="javax.swing.JScrollPane"/>
+	<bean id="beanScrollPaneEditorDeMensagens"	class="javax.swing.JScrollPane"/>
+	<bean id="beanScrollListaDeUsuarios"		class="javax.swing.JScrollPane"/>
+	<bean id="beanTextEditorDeMensagens"		class="javax.swing.JTextArea"/>
+	<bean id="beanBotaoEnviarMensagem"			class="javax.swing.JButton">
+		<constructor-arg type="java.lang.String" value="Enviar"/>
+	</bean>
+
+	<bean id="janelaInicial" class="br.edu.ifce.mflj.view.JanelaInicial">
+		<property name="janelaPrincipal"			ref="beanFrame"/>
+		<property name="scrollLogDeMensagens"		ref="beanScrollPaneLogDeMensagens"/>
+		<property name="scrollEditorDeMensagens"	ref="beanScrollPaneEditorDeMensagens"/>
+		<property name="scrollListaDeUsuarios"		ref="beanScrollListaDeUsuarios"/>
+		<property name="logDeMensagens"				ref="logDeMensagens"/>
+		<property name="botaoEnviarMensagem"		ref="beanBotaoEnviarMensagem"/>
+		<property name="textEditorDeMensagens"		ref="beanTextEditorDeMensagens"/>
+
+		<property name="canalDeComunicacao"			ref="canalDeComunicacao"/>
+		<property name="listaDeUsuarios"			ref="beanListaDeUsuarios"/>
+		<property name="panelTabuleiro"				ref="beanPanelTabuleiro"/>
+	</bean>
+
+	<bean id="logDeMensagens"					class="br.edu.ifce.mflj.view.LogDeMensagens"/>
+	<bean id="beanListaDeUsuarios"				class="br.edu.ifce.mflj.view.ListaDeUsuarios"/>
+	<bean id="canalDeComunicacao"				class="br.edu.ifce.mflj.conectividade.sockets.ClienteSocket"/>
+
+	<bean id="regraDoEspacoDiponivel"	class="br.edu.ifce.mflj.jogo.RegraEspacoDisponivel"/>
+
+	<bean id="regras" class="br.edu.ifce.mflj.jogo.Regulamento">
+		<property name="regras">
+			<list>
+				<ref bean="regraDoEspacoDiponivel"/>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="beanPanelTabuleiro" class="br.edu.ifce.mflj.view.TabuleiroPanel">
+	    <property name="regulamento" ref="regras"/>
+	</bean>
+</beans>
