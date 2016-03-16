@@ -1,4 +1,4 @@
-package br.edu.ifce.mflj.comunicacao;
+package br.edu.ifce.mflj.dados;
 
 public enum TipoPacote {
 	CHAT(				"CHAT"				),
