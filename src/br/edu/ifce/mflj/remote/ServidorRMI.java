@@ -1,18 +1,24 @@
-package br.edu.ifce.mflj.conectividade;
+package br.edu.ifce.mflj.remote;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
 
 import br.edu.ifce.mflj.dados.Pacote;
 import br.edu.ifce.mflj.dados.TipoPacote;
-import br.edu.ifce.mflj.remote.ObjetoRemoto;
 
-public class ServidorRMI implements ObjetoRemoto {
+public class ServidorRMI extends UnicastRemoteObject implements ObjetoRemoto {
+
+	protected ServidorRMI() throws RemoteException {
+		super();
+	}
+
+	private static final long serialVersionUID = -794283732233987094L;
 
 	private Map<String, ObjetoRemoto>	clientesConectados	= new HashMap<String, ObjetoRemoto>();
 	private Map<String, String>			clientesAlias		= new HashMap<String, String>();
@@ -23,7 +29,7 @@ public class ServidorRMI implements ObjetoRemoto {
 			do {
 				switch( pacote.getTipoPacote().getDescricao() ) {
 					case "CHECK_IN":
-						ObjetoRemoto clienteNovo = (ObjetoRemoto)Naming.lookup( (String)pacote.getPayload() );
+						ObjetoRemoto clienteNovo = (ObjetoRemoto)Naming.lookup( "rmi://localhost/" + pacote.getDe() );
 						broadcastPacote( pacote );
 						informarClientesConectadosPara( clienteNovo );
 						clientesConectados.put( pacote.getDe(), clienteNovo );
@@ -65,7 +71,6 @@ public class ServidorRMI implements ObjetoRemoto {
 	private void broadcastPacote( Pacote pacote ) throws RemoteException {
 		for( Map.Entry<String, ObjetoRemoto> clienteAtual : clientesConectados.entrySet() ){  
 			String identificadorAtual = clienteAtual.getKey();  
-
 			clientesConectados.get( identificadorAtual ).tratarPacote( pacote );
 		}
 	}
@@ -80,6 +85,19 @@ public class ServidorRMI implements ObjetoRemoto {
 		for( Map.Entry<String, ObjetoRemoto> objetoRemotoAtual : clientesConectados.entrySet() ){  
 			String identificadorAtual = objetoRemotoAtual.getKey();  
 			objetoRemotoClienteNovo.tratarPacote( new Pacote( TipoPacote.CHECK_IN, identificadorAtual, null, clientesAlias.get( identificadorAtual ) ) );
+		}
+	}
+
+	public static void main( String[] args ){
+		try {
+			ServidorRMI servidor = new ServidorRMI();
+			Naming.rebind("rmi://localhost/servidor", servidor);
+
+		} catch( RemoteException remoteException ){
+			remoteException.printStackTrace();
+
+		} catch( MalformedURLException MalformedURLException ){
+			MalformedURLException.printStackTrace();
 		}
 	}
 }
